@@ -1,0 +1,103 @@
+Tues 16/6/20 L-339 create a table and insert data (CREATE READ UPDATE DESTROY)
+https://sqliteonline.com/
+CREATE TABLE products(
+id INT NOT NULL,
+name STRING,
+price MONEY,  // FOR MONEY https://www.w3schools.com/sql/sql_datatypes.asp
+PRIMARY KEY(id) // SQL PRIMARY KEYS https://www.w3schools.com/sql/sql_primarykey.asp
+
+
+
+ INSERT INTO Row
+https://www.w3schools.com/sql/sql_insert.asp
+//
+INSERT INTO products
+VALUES (1, "Pen", 1.20)
+ //
+INSERT into products
+VALUES (2,"PENCIL",0.8, 12)
+
+
+
+L-340 COMMANDS: READ, Select Anywhere
+SELECT * FROM products    // show all the products https://www.w3schools.com/sql/sql_intro.asp
+SELECT name, price FROM products  // show the selected products( name and price) // https://www.w3schools.com/sql/sql_select.asp
+SELECT * FROM products WHERE id = 1 // select where https://www.w3schools.com/sql/sql_where.asp
+
+L-341 Updating Single Values and Adding Columns in SQL
+https://www.w3schools.com/sql/sql_update.asp
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+//
+UPDATE products
+SET price =0.8
+WHERE id=2
+
+//
+UPDATE products
+SET stock = 32
+WHERE id = 1
+
+// To Add column
+https://www.w3schools.com/sql/sql_alter.asp
+ALTER TABLE table_name
+ADD column_name datatype;
+//
+ALTER TABLE products
+ADD stock INT
+
+WED 17/6/20 L-342 SQL COMMAND: Delete (CREATE READ UPDATE DESTROY)
+https://www.w3schools.com/sql/sql_delete.asp
+DELETE FROM table_name
+WHERE condition;
+
+//
+DELETE FROM products
+WHERE name = pencil or WHERE id = 2 or WHERE stock = 12
+
+L-343 Understanding SQL Relationships, Foreign Keys and Inner Joins
+https://www.w3schools.com/sql/sql_foreignkey.asp
+CREATE TABLE Orders (
+    OrderID int NOT NULL,
+    OrderNumber int NOT NULL,
+    PersonID int,
+    PRIMARY KEY (OrderID),
+    FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
+
+
+add a new table called orders CREATE TABLE orders
+//
+
+CREATE TABLE orders (
+id INT NOT NULL,
+order_numbers INT,
+customer_id INT,
+products_id INT,
+PRIMARY KEY(id),
+FOREIGN key (customer_id) REFERENCES customers(id),
+FOREIGN key (products_id) REFERENCES products(id)
+)
+
+// step 2 insert into orders
+INSERT into orders
+VALUES(1,4362,2,1)
+//
+INSERT into orders
+VALUES(2,254,1,1)
+
+// INNER JOIN ( inner join example)
+https://www.w3schools.com/sql/sql_join_inner.asp
+SELECT Orders.OrderID, Customers.CustomerName
+FROM Orders
+INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID;
+
+// joining customers with Order
+SELECT orders.order_numbers, customers.first_name, customers.last_name, customers.address
+FROM orders
+INNER JOIN customers ON orders.customer_id = customers.id;
+
+// joining products with order numbers
+SELECT orders.order_numbers, products.name, products.price, products.stock
+FROM orders
+INNER JOIN products ON orders.products_id = products.id;

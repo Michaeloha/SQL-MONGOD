@@ -1,0 +1,501 @@
+ Monday 22/5/20 L-348 Mongodb CRUD operation in shell
+
+ shell 1
+ mongod --dbpath ~/data/db ( to start the server)
+
+ to quit server - control C
+
+ shell 2
+ type
+ > mongo
+ > show dbs
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+> use shopDB
+switched to db shopDB
+> db
+shopDB
+
+          CREATE
+https://docs.mongodb.com/manual/crud/
+> db.products.insertOne({_id:1, name: "Pen", price: 1.20})
+{ "acknowledged" : true, "insertedId" : 1 }
+> show collections
+products2
+> db
+shopDB
+> db.products.insertOne({_id:2, name: "pencil", price:0.80})
+{ "acknowledged" : true, "insertedId" : 2 }
+> db
+shopDB
+> show collections
+products
+
+                    CREATE OR INSERT
+db.products.insertOne({_id:2, name: "pencil", price:0.80, stock:12})
+{ "acknowledged" : true, "insertedId" : 2 }
+> db.products.find()
+{ "_id" : 1, "name" : "Pen", "price" : 1.2, "stock" : 32 }
+{ "_id" : 2, "name" : "pencil", "price" : 0.8, "stock" : 12 }
+>
+
+          READ
+> db.products.find()
+{ "_id" : 1, "name" : "Pen", "price" : 1.2 }
+{ "_id" : 2, "name" : "pencil", "price" : 0.8 }
+>
+> db.products.find({name: "pencil"})     //find with query
+{ "_id" : 2, "name" : "pencil", "price" : 0.8 }
+
+> db.products.find({price: {$gt:1}})
+{ "_id" : 1, "name" : "Pen", "price" : 1.2 }
+> db.products.find({_id: 1}, {name: 1})  // find with query and projection
+{ "_id" : 1, "name" : "Pen" }
+
+> db.products.find({_id: 1}, {name: 1, _id: 0}) // query with project when you dont need id because id is default(meaning it will always show)
+{ "name" : "Pen" }
+
+
+            UPDATE
+          db.collection.updateOne() New in version 3.2 ;db.collection.updateMany(); db.collection.replaceOne()
+  >  db.products.updateOne({_id:1},{$set: {stock:32 }})
+  { "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+  > db.products.find()
+  { "_id" : 1, "name" : "Pen", "price" : 1.2, "stock" : 32 }
+  { "_id" : 2, "name" : "pencil", "price" : 0.8 }
+  > db.products.updateOne({_id:2}, {$set: {stock: 12}})  // update another one product (challenge)
+  { "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+  > db.products.find()
+  { "_id" : 1, "name" : "Pen", "price" : 1.2, "stock" : 32 }
+  { "_id" : 2, "name" : "pencil", "price" : 0.8, "stock" : 12 }
+
+                Delete  db.collection.deleteOne() or Many ()
+> db.products.deleteOne({_id:2})
+{ "acknowledged" : true, "deletedCount" : 1 }
+> db.products.find()
+{ "_id" : 1, "name" : "Pen", "price" : 1.2, "stock" : 32 }
+>
+
+          INSERT WITH Reviews (Example 1)
+
+> db.products.insert(
+... {
+... _id:3,
+... name:"Rubber",
+... price:1.30,
+... stock: 43,
+... Reviews:[
+... {
+... authorName: "Sally",
+... rating: 5,
+... review: "Best rubber ever !"
+... },
+... {
+... authorName: "John",
+... rating: 4,
+... review: "Awesome rubber!"
+... }
+... ]
+... }
+... )
+WriteResult({ "nInserted" : 1 })
+>
+> db.products.find()
+{ "_id" : 1, "name" : "Pen", "price" : 1.2, "stock" : 32 }
+{ "_id" : 2, "name" : "pencil", "price" : 0.8, "stock" : 12 }
+{ "_id" : 3, "name" : "Rubber", "price" : 1.3, "stock" : 43, "Reviews" : [ { "authorName" : "Sally", "rating" : 5, "review" : "Best rubber ever !" }, { "authorName" : "John", "rating" : 4, "review" : "Awesome rubber!" } ] }
+>
+
+                Example 2
+> db.products.insertOne(
+... {
+... _id:2,
+... name:"Pencil",
+... price:0.8,
+... stock: 12,
+... Reviews:[
+... {
+... authorName: "Mikky",
+... rating: 5,
+... review: "Best pencil and very cheap !"
+... },
+... {
+... authorName: "Sunny",
+... rating: 4,
+... review: "Awesome pencil with erasers!"
+... }
+... ]
+... }
+... )
+{ "acknowledged" : true, "insertedId" : 2 }
+>
+> db.products.find()
+{ "_id" : 1, "name" : "Pen", "price" : 1.2, "stock" : 32 }
+{ "_id" : 3, "name" : "Rubber", "price" : 1.3, "stock" : 43, "Reviews" : [ { "authorName" : "Sally", "rating" : 5, "review" : "Best rubber ever !" }, { "authorName" : "John", "rating" : 4, "review" : "Awesome rubber!" } ] }
+{ "_id" : 2, "name" : "Pencil", "price" : 0.8, "stock" : 12, "Reviews" : [ { "authorName" : "Mikky", "rating" : 5, "review" : "Best pencil and very cheap !" }, { "authorName" : "Sunny", "rating" : 4, "review" : "Awesome pencil with erasers!" } ] }
+>
+
+
+
+WRITE the format in atom and copy to hyper. it is easier
+
+db.products.insert(
+{
+_id:3,
+name:"Rubber",
+price:1.30,
+stock: 43,
+Reviews:[
+{
+authorName: "Sally",
+rating: 5,
+review: "Best rubber ever !"
+},
+{
+authorName: "John",
+rating: 4,
+review: "Awesome rubber!"
+}
+]
+}
+)
+
+
+
+db.products.insertOne(
+{
+_id:2,
+name:"Pencil",
+price:0.8,
+stock: 12,
+Reviews:[
+{
+authorName: "Mikky",
+rating: 5,
+review: "Best pencil and very cheap !"
+},
+{
+authorName: "Sunny",
+rating: 4,
+review: "Awesome pencil with erasers!"
+}
+]
+}
+)
+
+
+L-353 Working with Native Mongodb Driver
+http://mongodb.github.io/node-mongodb-native/3.5/quick-start/quick-start/
+
+user@Michael-MacBook-Pro-15 ~ % cd Desktop
+user@Michael-MacBook-Pro-15 Desktop % mkdir FruitProject
+user@Michael-MacBook-Pro-15 Desktop % cd FruitProject
+user@Michael-MacBook-Pro-15 FruitProject % touch app.js
+user@Michael-MacBook-Pro-15 FruitProject % npm init
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sensible defaults.
+
+See `npm help json` for definitive documentation on these fields
+and exactly what they do.
+
+Use `npm install <pkg>` afterwards to install a package and
+save it as a dependency in the package.json file.
+
+Press ^C at any time to quit.
+package name: (fruitproject)
+version: (1.0.0)
+description: Made with Love by Michaeloha
+entry point: (app.js)
+test command:
+git repository:
+keywords:
+author: Michaeloha
+license: (ISC)
+About to write to /Users/user/Desktop/FruitProject/package.json:
+
+{
+  "name": "fruitproject",
+  "version": "1.0.0",
+  "description": "Made with Love by Michaeloha",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michaeloha",
+  "license": "ISC"
+}
+
+
+Is this OK? (yes)
+user@Michael-MacBook-Pro-15 FruitProject % npm i mongodb
+npm notice created a lockfile as package-lock.json. You should commit this file.
+npm WARN fruitproject@1.0.0 No repository field.
+
++ mongodb@3.5.9
+added 20 packages from 11 contributors and audited 20 packages in 7.177s
+
+1 package is looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+
+
+   ╭────────────────────────────────────────────────────────────────╮
+   │                                                                │
+   │      New patch version of npm available! 6.14.4 → 6.14.5       │
+   │   Changelog: https://github.com/npm/cli/releases/tag/v6.14.5   │
+   │               Run npm install -g npm to update!                │
+   │                                                                │
+   ╰────────────────────────────────────────────────────────────────╯
+
+user@Michael-MacBook-Pro-15 FruitProject %
+user@Michael-MacBook-Pro-15 FruitProject % atom .app.js  // to open atom from hyper with foldername
+user@Michael-MacBook-Pro-15 FruitProject % atom app.js
+user@Michael-MacBook-Pro-15 FruitProject % atom app.js
+user@Michael-MacBook-Pro-15 FruitProject % atom
+user@Michael-MacBook-Pro-15 FruitProject % atom app.js
+
+      step 2          app.js  copied from the website mongodb.com-
+http://mongodb.github.io/node-mongodb-native/3.5/quick-start/quick-start/
+app.js
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+
+// Connection URL
+const url = 'mongodb://localhost:27017';
+
+// Database Name
+const dbName = 'FruitDB';
+
+// Create a new MongoClient
+const client = new MongoClient(url, { useUnifiedTopology: true } ); // from hyper advising to use this and also in stackoverflow
+
+// Use connect method to connect to the Server
+client.connect(function(err) {
+  assert.equal(null, err);
+  console.log("Connected successfully to server");
+
+  const db = client.db(dbName);
+
+  client.close();
+});
+
+
+step 3 on hyper
+user@Michael-MacBook-Pro-15 FruitProject % node app.js
+(node:41816) DeprecationWarning: current Server Discovery and Monitoring engine is deprecated, and will be removed in a future version. To use the new Server Discover and Monitoring engine, pass option { useUnifiedTopology: true } to the MongoClient constructor.
+Connected successfully to server
+user@Michael-MacBook-Pro-15 FruitProject %
+
+
+step 4 NEED TO CHANGE THE DeprecationWarning(ON APP.JS)just copied { useUnifiedTopology: true } and add to the const client (url, as seen above.
+user@Michael-MacBook-Pro-15 FruitProject % node app.js
+(node:41816) DeprecationWarning: current Server Discovery and Monitoring engine is deprecated, and will be removed in a future version. To use the new Server Discover and Monitoring engine, pass option { useUnifiedTopology: true } to the MongoClient constructor.
+Connected successfully to server
+user@Michael-MacBook-Pro-15 FruitProject % node app.js
+Connected successfully to server
+user@Michael-MacBook-Pro-15 FruitProject %
+
+step 5 Insert a Document to app.js from the website: http://mongodb.github.io/node-mongodb-native/3.5/quick-start/quick-start/
+const insertDocuments = function(db, callback) {
+  // Get the documents collection
+  const collection = db.collection('documents');
+  // Insert some documents
+  collection.insertMany([
+    {a : 1}, {a : 2}, {a : 3}
+  ], function(err, result) {
+    assert.equal(err, null);
+    assert.equal(3, result.result.n);
+    assert.equal(3, result.ops.length);
+    console.log("Inserted 3 documents into the collection");
+    callback(result);
+  });
+}
+
+
+step 6 hyper
+//jshint esversion6
+
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+
+// Connection URL
+const url = 'mongodb://localhost:27017';
+
+// Database Name
+const dbName = 'fruitsDB';
+
+// Create a new MongoClient
+const client = new MongoClient(url, { useUnifiedTopology: true } );
+
+// Use connect method to connect to the Server
+client.connect(function(err) {
+  assert.equal(null, err);
+  console.log("Connected successfully to server");
+
+  const db = client.db(dbName);
+
+  insertDocuments(db, function() {
+    client.close();
+});
+});
+
+const insertDocuments = function(db, callback) {
+  // Get the documents collection
+  const collection = db.collection('fruits');
+  // Insert some documents
+  collection.insertMany([
+    {
+      name: "Apple",
+      score: 8,
+      review: "Great Fruit"
+    },
+     {
+       name: "Orange",
+       score: 6,
+       review: "Kinda sour"
+     },
+     {
+       name: "Banana",
+       score: 9,
+       review: "Great stuff contains enough"
+     }
+  ], function(err, result) {
+    assert.equal(err, null);
+    assert.equal(3, result.result.n);
+    assert.equal(3, result.ops.length);
+    console.log("Inserted 3 documents into the collection");
+    callback(result);
+  });
+}
+step 7    hyper
+user@Michael-MacBook-Pro-15 FruitProject % node app.js
+Connected successfully to server
+Inserted 3 documents into the collection
+user@Michael-MacBook-Pro-15 FruitProject %
+
+
+new shell to see what we have created using mongodb drive
+
+> show dbs
+admin     0.000GB
+config    0.000GB
+fruitsDB  0.000GB
+local     0.000GB
+shopDB    0.000GB
+> use fruitsDB
+switched to db fruitsDB
+> show collections
+fruits
+> db.fruits.find()
+{ "_id" : ObjectId("5ef0ccc6ab9268a42af77d80"), "name" : "Apple", "score" : 8, "review" : "Great Fruit" }
+{ "_id" : ObjectId("5ef0ccc6ab9268a42af77d81"), "name" : "Orange", "score" : 6, "review" : "Kinda sour" }
+{ "_id" : ObjectId("5ef0ccc6ab9268a42af77d82"), "name" : "Banana", "score" : 9, "review" : "Great stuff contains enough" }
+>
+
+
+
+// to find all insertDocuments app.js updated
+//jshint esversion6
+// Connect to MongoDB: copied from the website() http://mongodb.github.io/node-mongodb-native/3.5/quick-start/quick-start/
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+
+// Connection URL
+const url = 'mongodb://localhost:27017';
+
+// Database Name
+const dbName = 'fruitsDB';
+
+// Create a new MongoClient
+const client = new MongoClient(url, { useUnifiedTopology: true } );
+
+// Use connect method to connect to the Server
+client.connect(function(err) {
+  assert.equal(null, err);
+  console.log("Connected successfully to server");
+
+  const db = client.db(dbName);
+// findDocuments
+findDocuments(db, function() {
+    client.close();
+  });
+});
+// Insert a Document http://mongodb.github.io/node-mongodb-native/3.5/quick-start/quick-start/
+const insertDocuments = function(db, callback) {
+  // Get the documents collection
+  const collection = db.collection('fruits');
+  // Insert some documents
+  collection.insertMany([
+    {
+      name: "Apple",
+      score: 8,
+      review: "Great Fruit"
+    },
+     {
+       name: "Orange",
+       score: 6,
+       review: "Kinda sour"
+     },
+     {
+       name: "Banana",
+       score: 9,
+       review: "Great stuff contains enough"
+     }
+  ], function(err, result) {
+    assert.equal(err, null);
+    assert.equal(3, result.result.n);
+    assert.equal(3, result.ops.length);
+    console.log("Inserted 3 documents into the collection");
+    callback(result);
+  });
+}
+
+//Find All Documents
+const findDocuments = function(db, callback) {
+  // Get the documents collection
+  const collection = db.collection('fruits');
+  // Find some documents
+  collection.find({}).toArray(function(err, fruits) {
+    assert.equal(err, null);
+    console.log("Found the following records");
+    console.log(fruits)
+    callback(fruits);
+  });
+};
+
+
+
+
+
+
+hyper
+user@Michael-MacBook-Pro-15 FruitProject % node app.js
+Connected successfully to server
+Inserted 3 documents into the collection
+user@Michael-MacBook-Pro-15 FruitProject % node app.js
+Connected successfully to server
+Found the following records
+[
+  {
+    _id: 5ef0ccc6ab9268a42af77d80,
+    name: 'Apple',
+    score: 8,
+    review: 'Great Fruit'
+  },
+  {
+    _id: 5ef0ccc6ab9268a42af77d81,
+    name: 'Orange',
+    score: 6,
+    review: 'Kinda sour'
+  },
+  {
+    _id: 5ef0ccc6ab9268a42af77d82,
+    name: 'Banana',
+    score: 9,
+    review: 'Great stuff contains enough'
+  }
+]
+user@Michael-MacBook-Pro-15 FruitProject %
